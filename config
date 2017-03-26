@@ -1,0 +1,10 @@
+# Google Drive Settings
+Google Drive Folder Name = hstanescu
+
+# Zotero Group Library Settings
+Zotero Group Library ID = 1054252
+Zotero Group Collection Name = hcs
+
+# What to do with each item
+Work Mode = url_set
+Debug = True
