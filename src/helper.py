@@ -103,9 +103,23 @@ def intersect_maps( gmap, zmap ):
             
     pdf_errors.close()
 
-    if (dupes + no_overlap) > 0:
+    concerns = dupes + no_overlap
+    if concerns > 0:
         print('''\nGoogle/Zotero: [PDF intersection]
          - %d duplicates
          - %d non-overlapping files\n''' % (dupes, no_overlap), file=cerr)
-    
-    return map
+
+    perc = concerns * 100 / len(map)
+    if perc > 1:
+        print("Warning: %d%% ( > 1%% ) of your Google PDF Files are duplicates\n" % perc,
+              "        or do not overlap well with their Zotero counterparts.",
+              file = cerr)
+
+    ans = input("Proceed? [Y/n] ")
+    ans = ans.strip()
+
+    if ans == "" or ans[0].upper() == "Y":
+        return map
+
+    print("Aborting.")
+    exit(-1)
