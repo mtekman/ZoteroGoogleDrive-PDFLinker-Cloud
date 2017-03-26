@@ -15,9 +15,11 @@ from GoogleShareable import *
 from ZotExportReader import *
 from ZoteroEdit import *
 from helper import *
+from kludge import *
 
+Kludge()
 
-gfold, zlibid, zname, work_mode, debug = readInSettings(argv[1])
+gfold, zlibid, zname, work_mode, api_key, debug = readInSettings(argv[1])
 csvfile = argv[2]
 
 # Map out google shares and Zotero export
@@ -27,7 +29,7 @@ zoer = ZotExportReader( csvfile )                     # Map: pdf -> [{title, yea
 
 title_map = intersect_maps( goog.map, zoer.map )
 
-zed = ZoteroEdit( zlibid, title_map, debug )
+zed = ZoteroEdit( zlibid, api_key, title_map, debug )
 col = zed.findCollectionID( zname )
 
 zed.processItems( col, work_mode )

@@ -6,7 +6,7 @@ from sys import stderr as cerr
 
 class ZoteroEdit:
 
-    def __init__(self, library_id, titlemap, debug = False):
+    def __init__(self, library_id, api_key, titlemap, debug = False):
         
         self.library_id  = library_id
         self.titlemap    = titlemap

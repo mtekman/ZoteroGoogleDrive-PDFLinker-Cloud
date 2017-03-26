@@ -1,0 +1,6 @@
+gsettings/
+*.sqlite
+*.txt
+*~
+src/__pycache__/
+gsettings/client_secrets.json

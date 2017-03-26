@@ -122,6 +122,7 @@ class GoogleShareable :
   def __generateLinks(self, output, foldername, start_from = 0):
     gauth = GoogleAuth()                # Create local webserver and auto handles authentication.
     gauth.LocalWebserverAuth()          # An appropriate settings.yaml must exist
+    #gauth.CommandLineAuth()
 
     drive = GoogleDrive(gauth)   # Create GoogleDrive instance with authenticated GoogleAuth instance
 

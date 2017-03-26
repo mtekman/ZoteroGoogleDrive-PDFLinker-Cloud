@@ -59,7 +59,7 @@ def readInSettings(filename):
         print(errors, file=cerr)
         exit(-1)
 
-    return (gfold, zlibid, zname, work_mode, debug)
+    return (gfold, zlibid, zname, work_mode, zotkey, debug)
 
 
 
