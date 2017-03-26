@@ -11,9 +11,7 @@ For each PDF in your GoogleDrive, obtain a shareable link and then manually set 
 
 ***That sounds tedious. Surely there's an easier way?***
 
-Not yet, but I'm sure the Zotero guys are working on it.
-
-Lucky for us, we have this nifty little utility to automate the whole linking process (via *"The Simple Way"*).
+Lucky for us, we have this nifty little utility to automate the whole linking process (via "The Simple Way")
 
 ## Pre-Requisites 
 
