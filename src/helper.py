@@ -5,18 +5,12 @@ from sys import stderr as cerr
 def readInSettings(filename):
     """Reads in the user set config file and sets the target google and zotero folders and libraries"""
 
-    gfold = ""
-    zlibid = -1
-    zname = ""
+    gfold = zlibid = zname = zotkey = debug = modeset = None
     work_mode = {
         'url_set'   : False,
         'url_clear' : False,
         'attach_pdf': False
     }
-
-    debug = False
-
-    modes_found = False
 
     with open(filename,'r') as config:
 
@@ -26,11 +20,13 @@ def readInSettings(filename):
             if line[0] == '#' or len(line)<5:continue
 
             if line.startswith("Google Drive Folder Name"):
-                gfold = line.split('=')[-1].strip()
+                gfold  = line.split('=')[-1].strip()
             elif line.startswith("Zotero Group Library ID"):
                 zlibid = int( line.split('=')[-1].strip() )
             elif line.startswith("Zotero Group Collection Name"):
-                zname = line.split('=')[-1].strip()
+                zname  = line.split('=')[-1].strip()
+            elif line.startswith("Zotero API Key"):
+                zotkey = line.split('=')[-1].strip()
             elif line.startswith("Work Mode"):
                 tokens = line.split('=')[-1].strip().split(',')
 
@@ -38,11 +34,11 @@ def readInSettings(filename):
                     tok = tok.strip()
 
                     if tok not in work_mode:
-                        print("Invalid work mode", tok, file=cerr)
+                        print("Invalid work mode '%s'" % tok, file=cerr)
                         exit(-1)
 
                     work_mode[tok] = True
-                    modes_found = True
+                    modeset = True
 
             # Optional
             elif line.startswith("Debug"):
@@ -54,10 +50,11 @@ def readInSettings(filename):
         config.close()
    
     errors=""
-    if gfold == "":errors += "Error: Google Drive Folder Name - not specified\n"
-    if zname == "":errors += "Error: Zotero Group Library ID - not specified\n"
-    if zlibid =="":errors += "Error: Zotero Group Collection Name - not specified\n"
-    if not modes_found:errors += "Error: No work mode set\n"
+    if gfold  == None:errors += "Error: Google Drive Folder Name - not specified\n"
+    if zname  == None:errors += "Error: Zotero Group Library ID - not specified\n"
+    if zlibid == None:errors += "Error: Zotero Group Collection Name - not specified\n"
+    if zotkey == None:errors += "Error: Zotero API Key - not specified\n"
+    if modeset== None:errors += "Error: No work mode set\n"
     if errors != "":
         print(errors, file=cerr)
         exit(-1)
