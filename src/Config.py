@@ -19,7 +19,10 @@ class Config:
                     'personal_only'       : self.__cp.getboolean("General", "Personal Only")
                 },
                 'google'   : {
-                    'fold'                : self.__get("Google Drive", "Folder Name")
+                    'copy'                : self.__cp.getboolean("Google Drive", "Copy"),
+                    'fold'                : self.__get("Google Drive", "Folder Name"),
+                    'rename'              : self.__get("Google Drive", "Rename"),
+                    'rename_schema'       : self.__get("Google Drive", "Rename Schema")
                 },
                 'zotero'   : {
                     'api_key'             : self.__get("Zotero Settings", "API Key"),
@@ -35,8 +38,6 @@ class Config:
                 'debug'                  : self.__cp.getboolean("Other", "Debug"),
                 'pdf'      : {
                     'mode'               : self.__parsePDFMode("PDF Settings", "Mode"),
-                    'rename'             : self.__get("PDF Settings", "Rename"),
-                    'rename_schema'      : self.__get("PDF Settings", "Rename Schema")
                 }
             }
                            

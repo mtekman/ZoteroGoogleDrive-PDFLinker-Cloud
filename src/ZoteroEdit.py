@@ -4,26 +4,69 @@ from pyzotero import zotero
 from sys import stderr as cerr
 
 
+class ZoteroDispatch:
+
+    def __init__(self, zconf, titlemap, pdf_settings, personal_only = False, debug = False):
+
+        self.__userzot    = ZoteroEdit(  "user",  zconf, titlemap, pdf_settings, debug )
+
+        if not personal_only:
+            self.__grpzot = ZoteroSync( zconf['group'], "group", zconf['api_key'], titlemap, pdf_settings, debug )
+
+
+
 class ZoteroEdit:
 
-    def __init__(self, library_id, api_key, titlemap, debug = False):
-        
-        self.library_id  = library_id
-        self.titlemap    = titlemap
+    def __init__(self, libraryType, zconfig, titlemap, pdf_settings, debug = False):
 
-        self.__zot       = zotero.Zotero( library_id , "group", api_key)
-        self.__log       = open('zotero_edit.log','w')
+        collname         = zconfig[libraryType]['collection_name']
+        self.__debug     = debug
+        self.__tmap      = titlemap
+
+        self.__zot       = zotero.Zotero( zconfig[libraryType]['lib_id'], libraryType, zconfig['api_key'])
+        self.__collID   = self.findCollectionID( collname )
+        
+        self.__log       = open('zotero_edit.'+libraryType+'.'+collname+'.log','a')
+        self.__log.write("\n\n\n======================\n")
 
         self.attach_pdf  = False
         self.url_set     = False
         self.url_clear   = False
         self.url_is_used = False
-        self.debug       = debug
 
-        if debug:
+        if self.__debug:
             print("Debug mode in use", file=cerr)
 
+        self.retrieveFilesFromServer();
 
+    def logthis(self, *args):
+        print(*args,file=cerr)
+        print(*args,file=self.__log)
+
+
+
+    def forItem_retrieveChildFiles(self, item):
+        children = self.__zot.children(item['key'])
+
+        if len(children) > 0:
+            self.logthis("Retrieving child for %s:" % item['data']['title'])
+        
+        for child in children:
+            if child['data']['linkMode'] == 'imported_file':
+                filename = child['data']['filename']
+                self.logthis("  - Saving", filename)
+                self.__zot.dump(child['key'], filename, './')
+                    
+        return (1,1)
+        
+        
+    def retrieveFilesFromServer(self):
+   
+        self.__iterateItemsInCollection(
+            self.ItemRetrieveChildFiles, "Done: %d"
+        )
+        exit(0)
+            
     
     def processItems(self, collectionID, work_mode ):
         """Attaches or sets URL"""
@@ -54,8 +97,7 @@ class ZoteroEdit:
             self.url_is_used = True
 
         self.__iterateItemsInCollection(
-            collectionID,
-            self.__dummyProcess if self.debug else self.__itemProcess,
+            self.__dummyProcess if self.__debug else self.__itemProcess,
             format_string
         )
       
@@ -193,8 +235,8 @@ class ZoteroEdit:
 
     
     
-    def __iterateItemsInCollection(self, collectionID, callback, progmessage):
-        """Iterate through all items in a collection and perform callback upon each item"""
+    def __iterateItemsInCollection(self, callback, progmessage):
+        """Iterate through all items in the collection and perform callback upon each item"""
         # Can handle 100 at a time
         start_it = 0
         limit_vl = 100
@@ -205,8 +247,7 @@ class ZoteroEdit:
 
 
         while True:
-            # Top level, don't recurse into children
-            items = self.__zot.collection_items_top(collectionID, start=start_it, limit = limit_vl)
+            items = self.__zot.collection_items_top(self.__collID, start=start_it, limit = limit_vl)
             start_it += limit_vl
 
             len_items = len(items)
@@ -269,10 +310,9 @@ class ZoteroEdit:
 
 
     # Debug
-    def getAllItems(self, collectionID):
+    def getAllItems(self):
         """Prints out all items"""
         self.__iterateItemsInCollection(
-            collectionID,
             self.printItem,
             "Processed %d of which %d are printed"
         )

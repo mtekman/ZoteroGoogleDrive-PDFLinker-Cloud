@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-from sys import argv
+from sys import argv,stderr
 
 if len(argv) != 3:
     print('''
     %s <config file> <exported local zotero CSV>
 
 See README.md for config examples
-''' % argv[0].split('/')[-1], file=sys.stderr)
+''' % argv[0].split('/')[-1], file=stderr)
     exit(-1)
 
 
@@ -18,17 +18,26 @@ from Config import *
 from helper import *
 
 
-conf    = Config(argv[1])
+conf    = Config(argv[1]).setting
 csvfile = argv[2]
 
 # Map out google shares and Zotero export
 #
-goog = GoogleShareable( gfold, gfold+".output.txt" )  # Map: pdf -> sharelink
-zoer = ZotExportReader( csvfile )                     # Map: pdf -> [{title, year, author, PDF}]
+#goog = GoogleShareable( gfold, gfold+".output.txt" )  # Map: pdf -> sharelink
+#zoer = ZotExportReader( csvfile )                     # Map: pdf -> [{title, year, author, PDF}]
 
-title_map = intersect_maps( goog.map, zoer.map )
+#title_map = intersect_maps( goog.map, zoer.map )
+title_map = {}
 
-zed = ZoteroEdit( zlibid, api_key, title_map, debug )
-col = zed.findCollectionID( zname )
+# Edit personal library and/or sync or clone to a group one
+zed = ZoteroDispatch(
+    conf['zotero'],
+    title_map,
+    conf['pdf'],
+    conf['general']['personal_only'],
+    conf['debug']
+)
 
-zed.processItems( col, work_mode )
+
+
+    
