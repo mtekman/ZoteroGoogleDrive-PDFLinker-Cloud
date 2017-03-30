@@ -2,12 +2,17 @@
 
 from sys import argv,stderr
 
-if len(argv) != 3:
+arg_conf="--make-config"
+
+if not(len(argv) == 3 or (len(argv)==2 and argv[1]==arg_conf)):
+    name = argv[0].split('/')[-1]
     print('''
     %s <config file> <exported local zotero CSV>
 
-See README.md for config examples
-''' % argv[0].split('/')[-1], file=stderr)
+ or %s %s
+
+
+''' % (name,name, arg_conf), file=stderr)
     exit(-1)
 
 
@@ -17,9 +22,10 @@ from ZoteroEdit import *
 from Config import *
 from helper import *
 
-
-conf    = Config(argv[1]).setting
+conf    = Config(argv[1])
 csvfile = argv[2]
+
+exit(0)
 
 # Map out google shares and Zotero export
 #
