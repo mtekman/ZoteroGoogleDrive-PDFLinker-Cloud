@@ -18,13 +18,18 @@ if not(len(argv) == 3 or (len(argv)==2 and argv[1]==arg_conf)):
 
 from GoogleShareable import *
 from ZotExportReader import *
-from ZoteroEdit import *
-from Config import *
-from helper import *
+from ZoteroEdit      import *
+from HashFiles       import *
+from Config          import *
+from helper          import *
 
-conf    = Config(argv[1])
+setting = Config(argv[1]).setting
 csvfile = argv[2]
 
+# For non-Zotero storage, hash out files in the external storage
+if setting['pdf','storage'] != "":
+    HashFiles( setting['pdf','storage'] )
+   
 exit(0)
 
 # Map out google shares and Zotero export
@@ -37,11 +42,11 @@ title_map = {}
 
 # Edit personal library and/or sync or clone to a group one
 zed = ZoteroDispatch(
-    conf['zotero'],
+    setting['zotero'],
     title_map,
-    conf['pdf'],
-    conf['general']['personal_only'],
-    conf['debug']
+    setting['pdf'],
+    setting['general']['personal_only'],
+    setting['debug']
 )
 
 
