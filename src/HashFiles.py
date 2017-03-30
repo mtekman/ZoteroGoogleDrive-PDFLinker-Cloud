@@ -15,6 +15,7 @@ class HashFiles:
         if not path.isdir(storage_dir):
             print("[Error] HashFiles", storage_dir, "is not a valid storage directory", file=cerr)
             exit(-1)
+        
         self.storage_path = path.abspath(storage_dir)
 
         # Setup user cache and hash file storage
@@ -23,25 +24,15 @@ class HashFiles:
             mkdir(config_dir)
 
         self.hash_filename = path.join(config_dir, HashFiles.__cleanstring(self.storage_path)+".hashes")
-
         self.map = {} # hash -> file, no collision...
 
+        if not path.exists(self.hash_filename):
+            self.generateHashesToCache()
+        else:
+            self.readHashesFromCache()
+        
 
-    @staticmethod
-    def __cleanstring(string):
-        """Should produce a reasonably unique string"""
-        valid_chars = "-_.() %s%s" % (ascii_letters, digits)
-        return ''.join(c if c in  valid_chars else "__" for c in string)
-
-
-    @staticmethod
-    def __md5sum(fname):
-        hash_md5 = md5()
-        with open(fname, "rb") as f:
-            for chunk in iter(lambda: f.read(4096), b""):
-                hash_md5.update(chunk)
-        return hash_md5.hexdigest()
-
+        
 
 
     def readHashesFromCache(self):
@@ -87,7 +78,24 @@ class HashFiles:
               "of which %d are duplicates of which %d are unique duplicates" % (dupe_count, len(dupes)), file=cerr)
 
 
+    @staticmethod
+    def __cleanstring(string):
+        """Should produce a reasonably unique string"""
+        valid_chars = "-_.() %s%s" % (ascii_letters, digits)
+        return ''.join(c if c in  valid_chars else "__" for c in string)
+
+
+    @staticmethod
+    def __md5sum(fname):
+        hash_md5 = md5()
+        with open(fname, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+
+        
+
 
 a = HashFiles('/home/tetron/.zotero/zotero/911t4bhn.default/zotero/storage/')
-a.generateHashesToCache()
-a.readHashesFromCache()
+#a.generateHashesToCache()
+#a.readHashesFromCache()

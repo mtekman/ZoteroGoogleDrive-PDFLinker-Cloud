@@ -59,7 +59,7 @@ class Config:
                 'storage'             : (self.__get, "PDF Settings", "Storage",
                                          "", "#\n# PDFs are either handled internally by Zotero and synced to their servers\n"+
                                          "# or are accessed from an external path on your local machine.\n"+
-                                         "#  - Values are either blank for zotero, or the full external path /foo/bar/PDFs/etc/")
+                                         "#  - If you use zotero storage, provide the cache directory, or the full external path /foo/bar/PDFs/etc/")
             },
             'other'    : {
                 'debug'               : (self.__cp.getboolean, "Other", "Debug",
