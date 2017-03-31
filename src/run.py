@@ -48,7 +48,3 @@ zed = ZoteroDispatch(
     setting['general']['personal_only'],
     setting['debug']
 )
-
-
-
-    

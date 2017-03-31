@@ -96,6 +96,6 @@ class HashFiles:
         
 
 
-a = HashFiles('/home/tetron/.zotero/zotero/911t4bhn.default/zotero/storage/')
+#HashFiles('/home/tetron/.zotero/zotero/911t4bhn.default/zotero/storage/')
 #a.generateHashesToCache()
 #a.readHashesFromCache()
