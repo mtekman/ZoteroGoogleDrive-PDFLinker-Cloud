@@ -26,11 +26,32 @@ from helper          import *
 setting = Config(argv[1]).setting
 csvfile = argv[2]
 
-# For non-Zotero storage, hash out files in the external storage
-if setting['pdf','storage'] != "":
-    HashFiles( setting['pdf','storage'] )
-   
-exit(0)
+# Flow:
+#   - Sync local storage with GoogleDrive
+#         - Check local storage (Zstorage, or elsewhere) and hash out MD5s (this is quick, always make new hashes)
+#         - if GDrive folder does not exist:
+#                 prompt user for creation and copy/rename all from storage to drive.
+#                 generate GoogleDrive hashes and shareable links and store in the server
+#                      Hash file contains -> md5, local_title, remote title, link
+#         - else perform sync to server:             
+#                 - Get list of gdrive files, check against google hash file (remote title)
+#                   and generate new hash file if there is a difference.
+#                 - Read in local storage hash and check if there anything missing
+#                   (ignore new files on cloud, we have no local path to download them to)
+#                 - while there are missing files:
+#                      - upload any missing files under the rename schema, regenerate gdrive hashes, and attempt resync
+#
+#   - Google Drive is now up to date. We have a list of Google Hashes (md5, local, remote, link)
+#
+#   - Access Zotero Personal library on server, and link attachments:
+#          - Get list of MD5s for all attachments
+#          - Match Md5s with GoogleDrive links, and link shareable URL to the parent item
+#
+#   - Library now has updated links to Gdrive, it is up to the user to clone and share it.
+
+
+
+localstorage_hashmap = HashFiles( setting['pdf','storage'] ).map
 
 # Map out google shares and Zotero export
 #
