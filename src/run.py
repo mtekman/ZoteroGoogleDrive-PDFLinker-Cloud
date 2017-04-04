@@ -44,14 +44,13 @@ csvfile = argv[2]
 #   - Google Drive is now up to date. We have a list of Google Hashes (md5, local, remote, link)
 #
 #   - Access Zotero Personal library on server, and link attachments:
-#          - Get list of MD5s for all attachments
-#          - Match Md5s with GoogleDrive links, and link shareable URL to the parent item
+#          - Get list of MD5s and titles (if md5s not available) for all attachments
+#          - Match md5s+titles with GoogleDrive links, and link shareable URL to the parent item
 #
 #   - Library now has updated links to Gdrive, it is up to the user to clone and share it.
 
 
-
-localstorage_hashmap = HashFiles( setting['pdf','storage'] ).map
+#localstorage_hashmap = HashFiles( setting['pdf','storage'] ).map
 
 # Map out google shares and Zotero export
 #
