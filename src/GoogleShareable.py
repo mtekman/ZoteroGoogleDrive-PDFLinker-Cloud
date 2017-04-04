@@ -6,7 +6,8 @@ from pydrive.auth import GoogleAuth
 from sys import stderr as cerr
 
 class GoogleShareable :
-
+  """For an EXISTING gdrive folder, generate shareable links and write to cache"""
+  
   def __init__(self, foldername, output_file, start_from=0):
 
     self.map = {} # filename -> shareable link
