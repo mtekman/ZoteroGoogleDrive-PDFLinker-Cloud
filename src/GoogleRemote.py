@@ -4,66 +4,87 @@ from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
 
 from GoogleCommonLib import GoogleCommonLib
+from LocalStorage    import LocalStorage
+from os              import path
 
 from sys import stderr as cerr
 
 class GoogleRemote:
     """Copies files from remote to server if missing"""
 
-    def initAuth(self):
+    @staticmethod
+    def initAuth():
         gauth = GoogleAuth()              # Create local webserver and auto handles authentication.
         gauth.LocalWebserverAuth()        # An appropriate settings.yaml must exist
         #gauth.CommandLineAuth()
-        self.drive = GoogleDrive(gauth)   # Create GoogleDrive instance with authenticated GoogleAuth instance
-        self.hashmap = {}
-        self.titlemap = {}
+        return GoogleDrive(gauth)   # Create GoogleDrive instance with authenticated GoogleAuth instance
 
-    def generateHashMap(self, folderID, withShareable=True):
+
+    @staticmethod
+    def generateHashMap(drive, folderID, withShareable=True):
+        
         hashfile = open('hashfile','w') # used for logging only
-        filelist = GoogleCommonLib.listFilesInFolder(self.drive, folderID)
+        filelist = GoogleCommonLib.listFilesInFolder(drive, folderID)
+
+        hashmap = {}
 
         for fil in filelist:
-
-            url = GoogleCommonLib.getShareableLink(self.drive, fil)  # pull or generate
+            # pull or generate
+            url = GoogleCommonLib.getShareableLink(drive, fil)
             ori = fil['originalFilename']
             md5 = fil['md5Checksum']
             tit = fil['title']
 
-            if md5 not in self.hashmap:
-                self.hashmap[md5]  = ( ori, tit, url )
-                self.titlemap[tit] = md5
-            
-            print(md5, ori, tit, url, sep='\t', fil=hashfile)
+            if md5 not in hashmap:
+                hashmap[md5]  = ( ori, tit, url )
+            else:
+                print("Duplicate hash", md5, tit, hashmap[md5][1], file=cerr)
+           
+            print(md5, ori, tit, url, sep='\t', file=hashfile)
+
         hashfile.close()
-    
+        print("[Info] GoogleRemote:", len(hashmap), "hashes.", file=cerr)
+        return hashmap
   
+  
+
     def __init__(self, localfolder, remotefolder):
-        self.local  = localfolder
-        self.remote = remotefolder
-
-        self.initAuth()
-
-        folderID  = GoogleCommonLib.getFolderId(self.drive, remotefolder, True)
-        #file = GoogleCommonLib.uploadFile(self.drive, folderID, '/nomansland/MAIN_REPOS/zoterogoogledrive_pdflinker/README.md', "README.md")
-        #files = GoogleCommonLib.listFilesInFolder(self.drive, folderID)
-        self.generateHashFile( folderID )
-        exit(-1)
     
+        drive     = GoogleRemote.initAuth()
+        folderID  = GoogleCommonLib.getFolderId( drive, remotefolder, True )
+
+        local_hashes  = LocalStorage( localfolder ).map                     # hash -> filename
+        remot_hashes  = GoogleRemote.generateHashMap( drive, folderID )  # hash -> (fname, newname, url)
+
+        num_uploaded = GoogleRemote.syncFiles( drive, folderID, local_hashes, remot_hashes )
+
+        if num_uploaded > 0:
+            # Regenerate hashes to generate shareable links on all newly uploaded files
+            remot_hashes = GoogleRemote.generateHashMap( drive, folderID )
+            
+
+
 
     @staticmethod
-    def fileExists(filename):
+    def syncFiles( drive, folderID, local_hashes, remot_hashes):
 
-        try:
-            pop = open(filename,'r')
-            data = pop.readline()
-            pop.close()
+        num_uploaded = 0
 
-            if len(data.strip()) == 0:
-                return False  # Blank file
-      
-            return True   # does exist with data
-        except IOError:
-            return False    # does not exist
+        for lhash in local_hashes:
+            if lhash not in remot_hashes:
+
+                localfile      = local_hashes[lhash]
+                base_localfile = path.basename(localfile)
+
+                print("Uploading %s..." % base_localfile, end ='\t', file=cerr)
+                GoogleCommonLib.uploadFile( drive, folderID, localfile )
+                num_uploaded += 1
+                print(" ", file=cerr)
+
+        print("Synced.", file=cerr)
+        return num_uploaded
+   
+
 
 
 
@@ -146,5 +167,6 @@ class GoogleRemote:
             end_it += step        
 
 
-GoogleRemote("blah","test")
+
+#GoogleRemote( '/home/tetris/Documents/', "lastTest" )
     

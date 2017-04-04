@@ -6,34 +6,40 @@ from glob import glob
 from sys import stderr as cerr
 from string import ascii_letters, digits
 from appdirs import user_cache_dir
+from LocalLibs import LocalLibs
 
-class HashFiles:
+
+class LocalStorage:
     """Class to be used in conjunction with the MD5 hashes on Server for attachment types"""
 
     def __init__(self, storage_dir):
 
         if not path.isdir(storage_dir):
-            print("[Error] HashFiles", storage_dir, "is not a valid storage directory", file=cerr)
+            print("[Error] LocalStorage", storage_dir, "is not a valid storage directory", file=cerr)
             exit(-1)
         
         self.storage_path = path.abspath(storage_dir)
 
         # Setup user cache and hash file storage
         config_dir = user_cache_dir('GoogleZoteroPDFLinker')
+
+        self.hash_filename = path.join(
+            config_dir,
+            LocalStorage.__cleanstring(self.storage_path)+".hashes")
+
+
         if not path.exists(config_dir):
             mkdir(config_dir)
 
-        self.hash_filename = path.join(config_dir, HashFiles.__cleanstring(self.storage_path)+".hashes")
         self.map = {} # hash -> file, no collision...
 
-        if not path.exists(self.hash_filename):
+        if not LocalLibs.localFileExists(self.hash_filename):
             self.generateHashesToCache()
         else:
             self.readHashesFromCache()
         
 
         
-
 
     def readHashesFromCache(self):
 
@@ -43,17 +49,21 @@ class HashFiles:
                 self.map[hashv] = filen
             hash_file.close()           
 
-        print("[Info] HashFiles read in", len(self.map), "hashes.", file=cerr)
+        print("[Info] LocalStorage:", len(self.map), "hashes.", file=cerr)
 
     
+
     def generateHashesToCache(self):
         hash_file = open(self.hash_filename, 'w')
 
         dupes = {}
         dupe_count = 0
 
-        for filen in glob(self.storage_path+"/**/*.pdf", recursive=True):
-            hashv = HashFiles.md5sum(filen)
+        path = self.storage_path+"/**/*.pdf"
+
+        for filen in glob(path, recursive=True):
+
+            hashv = LocalStorage.md5sum(filen)
 
             if hashv in self.map:
                 if hashv not in dupes:
@@ -74,7 +84,7 @@ class HashFiles:
             hash_dupes.close()
             
 
-        print("[Info] HashFiles populated", len(self.map), #"hashes in", self.hash_filename,
+        print("[Info] LocalStorage populated", len(self.map), #"hashes in", self.hash_filename,
               "of which %d are duplicates of which %d are unique duplicates" % (dupe_count, len(dupes)), file=cerr)
 
 
@@ -92,10 +102,3 @@ class HashFiles:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(chunk)
         return hash_md5.hexdigest()
-
-        
-
-
-#HashFiles('/home/tetron/.zotero/zotero/911t4bhn.default/zotero/storage/')
-#a.generateHashesToCache()
-#a.readHashesFromCache()

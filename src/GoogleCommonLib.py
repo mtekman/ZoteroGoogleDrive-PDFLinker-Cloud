@@ -1,4 +1,5 @@
 from sys import stderr as cerr
+from os import path
 
 class GoogleCommonLib:
     """Common methods for handling Google Drive requests"""
@@ -8,7 +9,7 @@ class GoogleCommonLib:
         """Pulls existing, or generates a new one"""
         url = GoogleCommonLib.getExistingShareableLink( drive, gfile )
         if url == None:
-            print("%s : making url shareable" % gfile, file=cerr)
+            print("%s : making url shareable" % gfile['title'].split('/')[-1], file=cerr)
             url = GoogleCommonLib.generateShareableLink( drive, gfile )
 
         return url
@@ -43,8 +44,8 @@ class GoogleCommonLib:
                 filelist.append(f)
 
         if len(filelist) == 0:
-            print(parent, "has no files within", file=cerr)
-            exit(-1)
+            print("[Warning] GoogleCommonLib", folderID, "has no files within", file=cerr)
+
 
         return filelist
 
@@ -53,7 +54,7 @@ class GoogleCommonLib:
     def uploadFile(drive, parentID, filename, title = None):
         """UploadsFile, returns ID"""
         if title == None:
-            title = filename
+            title = path.basename( filename )
 
         f = drive.CreateFile({"title" : title,
                               "parents": [{"kind": "drive#fileLink", "id": parentID}]})
@@ -88,14 +89,18 @@ class GoogleCommonLib:
         valid_f_names = ["   "+x['title'] for x in folder_potentials]
                 
         print("Cannot find folder %s\nAvailable folders:\n%s" % (
-            foldername, '\n - '.join(valid_f_names)
+            foldername, ' - ' + ('\n - '.join(valid_f_names) ) + '\n'
         ), file=cerr)
 
         if create:
-            ans = input("Would you like to create '%s' regardless, and sync your local files to it? [y/N] " % foldername)
+            ans = input("Would you like to create '%s' regardless, and sync your local files to it? [y/N] "
+                        % foldername)
+            
             if ans[0].lower() == 'y':
                 print("Creating new remote directory '%s' at root..." % foldername, file=cerr)
                 return GoogleCommonLib.createFolder(drive, foldername)
+
+            print("Aborting.", file = cerr)
 
 
         # Not create, exit on failure

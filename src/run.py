@@ -4,10 +4,10 @@ from sys import argv,stderr
 
 arg_conf="--make-config"
 
-if not(len(argv) == 3 or (len(argv)==2 and argv[1]==arg_conf)):
+if len(argv)!=2 or (len(argv)==2 and argv[1][0]=='-' and argv[1] != arg_conf):
     name = argv[0].split('/')[-1]
     print('''
-    %s <config file> <exported local zotero CSV>
+    %s <config file>
 
  or %s %s
 
@@ -19,12 +19,10 @@ if not(len(argv) == 3 or (len(argv)==2 and argv[1]==arg_conf)):
 from GoogleShareable import *
 from ZotExportReader import *
 from ZoteroEdit      import *
-from HashFiles       import *
 from Config          import *
 from helper          import *
 
 setting = Config(argv[1]).setting
-csvfile = argv[2]
 
 # Flow:
 #   - Sync local storage with GoogleDrive
@@ -39,10 +37,11 @@ csvfile = argv[2]
 #                 - Read in local storage hash and check if there anything missing
 #                   (ignore new files on cloud, we have no local path to download them to)
 #                 - while there are missing files:
-#                      - upload any missing files under the rename schema, regenerate gdrive hashes, and attempt resync
+#                    - upload any missing files under the rename schema, regenerate gdrive hashes, and attempt resync
 #
 #   - Google Drive is now up to date. We have a list of Google Hashes (md5, local, remote, link)
-#
+#   - Up to here
+
 #   - Access Zotero Personal library on server, and link attachments:
 #          - Get list of MD5s and titles (if md5s not available) for all attachments
 #          - Match md5s+titles with GoogleDrive links, and link shareable URL to the parent item
@@ -50,7 +49,9 @@ csvfile = argv[2]
 #   - Library now has updated links to Gdrive, it is up to the user to clone and share it.
 
 
-#localstorage_hashmap = HashFiles( setting['pdf','storage'] ).map
+
+goog = GoogleRemote( setting['pdf']['storage'], setting['google']['fold']  )
+exit(0)
 
 # Map out google shares and Zotero export
 #
@@ -68,3 +69,4 @@ zed = ZoteroDispatch(
     setting['general']['personal_only'],
     setting['debug']
 )
+

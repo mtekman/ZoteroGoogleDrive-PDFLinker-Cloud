@@ -13,17 +13,19 @@ class Config:
         self.__filename = filename
 
         self.map = {
-            'general'  : {
-                'personal_only'       : (self.__cp.getboolean, "General", "Personal Only",
-                                         "False", "#  If set true will only process personal libraries\n#  and not create/process group libraries.")
-            },
+#            'general'  : {
+#                'personal_only'       : (self.__cp.getboolean, "General", "Personal Only",
+#                                         "False", "#  If set true will only process personal libraries\n",
+#                                         "#  and not create/process group libraries.")
+#            },
             'google'   : {
                 'fold'                : (self.__get, "Google Drive", "Folder Name",
-                                         "MyPDFs", "#  Use PDFs from this folder, or if the folder doesn't exist, create it\n#  as a new directory at top-level root."),
-                'copy'                : (self.__cp.getboolean, "Google Drive", "Copy",
-                                         "True", "#  If PDFs are already on the drive, don't copy or rename if true"),
-                'rename'              : (self.__get, "Google Drive", "Rename",
-                                         "False",  "#  otherwise:\n#  Rename PDFs when copying to the Drive by item metadata"),
+                                         "MyPDFs", "#  Use PDFs from this folder, or if the folder\n",
+                                         "# doesn't exist, create it\n#  as a new directory at top-level root."),
+#                'copy'                : (self.__cp.getboolean, "Google Drive", "Copy",
+#                                         "True", "#  If PDFs are already on the drive, don't copy or rename if true"),
+#                'rename'              : (self.__get, "Google Drive", "Rename",
+#                                         "False",  "#  otherwise:\n#  Rename PDFs when copying to the Drive by item metadata"),
                 'rename_schema'       : (self.__get, "Google Drive", "Rename Schema",
                                          "*Y--*J--*A--*T",
                                          "#  If true, schema uses following placeholders:\n"+
@@ -41,14 +43,14 @@ class Config:
                     'collection_name' : (self.__get, "Zotero Settings", "User Collection Name",
                                          "testthese", "")
                 },
-                'group': {
-                    'lib_id'          : (self.__get, "Zotero Settings", "Group Library ID",
-                                         "2345678",  "#\n#  Group settings are ignored if General:Personal Only is set true, otherwise:\n"+
-                                         "#   - Library ID found at https://www.zotero.org/groups/, clicking on your group, '/groups/<groupID>'\n"+
-                                         "#   - If the collection name cannot be found it will be created"),
-                    'collection_name' : (self.__get, "Zotero Settings", "Group Collection Name",
-                                         "groupcollname", "")
-                }
+#                'group': {
+#                    'lib_id'          : (self.__get, "Zotero Settings", "Group Library ID",
+#                                         "2345678",  "#\n#  Group settings are ignored if General:Personal Only is set true, otherwise:\n"+
+#                                         "#   - Library ID found at https://www.zotero.org/groups/, clicking on your group, '/groups/<groupID>'\n"+
+#                                         "#   - If the collection name cannot be found it will be created"),
+#                    'collection_name' : (self.__get, "Zotero Settings", "Group Collection Name",
+#                                         "groupcollname", "")
+#                }
             },
             'pdf'      : {
                 'mode'                : (self.__parsePDFMode,  "PDF Settings", "Mode",
