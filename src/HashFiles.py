@@ -53,7 +53,7 @@ class HashFiles:
         dupe_count = 0
 
         for filen in glob(self.storage_path+"/**/*.pdf", recursive=True):
-            hashv = HashFiles.__md5sum(filen)
+            hashv = HashFiles.md5sum(filen)
 
             if hashv in self.map:
                 if hashv not in dupes:
@@ -86,7 +86,7 @@ class HashFiles:
 
 
     @staticmethod
-    def __md5sum(fname):
+    def md5sum(fname):
         hash_md5 = md5()
         with open(fname, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
