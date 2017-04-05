@@ -44,7 +44,7 @@ class GoogleCommonLib:
                 filelist.append(f)
 
         if len(filelist) == 0:
-            print("[Warning] GoogleCommonLib", folderID, "has no files within", file=cerr)
+            print("[Warning] GoogleCommonLib folder[%s] has no files within" % folderID, file=cerr)
 
 
         return filelist
@@ -81,7 +81,7 @@ class GoogleCommonLib:
             if f['mimeType']=='application/vnd.google-apps.folder': # if folder
                 folder_potentials.append( f )
                 if foldername == f['title']:
-                    print("%s --> %s" % (foldername, f['id']), file=cerr)
+                    print("[Info] Folder %s[%s]" % (foldername, f['id']), file=cerr)
                     return f['id']
 
 

@@ -20,7 +20,7 @@ class Config:
 #            },
             'google'   : {
                 'fold'                : (self.__get, "Google Drive", "Folder Name",
-                                         "MyPDFs", "#  Use PDFs from this folder, or if the folder\n",
+                                         "MyPDFs", "#  Use PDFs from this folder, or if the folder\n"+
                                          "# doesn't exist, create it\n#  as a new directory at top-level root."),
 #                'copy'                : (self.__cp.getboolean, "Google Drive", "Copy",
 #                                         "True", "#  If PDFs are already on the drive, don't copy or rename if true"),

@@ -21,6 +21,7 @@ from ZotExportReader import *
 from ZoteroEdit      import *
 from Config          import *
 from helper          import *
+from GoogleSync      import GoogleSync
 
 setting = Config(argv[1]).setting
 
@@ -49,9 +50,8 @@ setting = Config(argv[1]).setting
 #   - Library now has updated links to Gdrive, it is up to the user to clone and share it.
 
 
+goog = GoogleSync( setting['pdf', 'storage'], setting['google', 'fold']  )
 
-goog = GoogleRemote( setting['pdf']['storage'], setting['google']['fold']  )
-exit(0)
 
 # Map out google shares and Zotero export
 #
