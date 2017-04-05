@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-from pydrive.drive import GoogleDrive
-from pydrive.auth import GoogleAuth
+from pydrive.drive   import GoogleDrive
+from pydrive.auth    import GoogleAuth
+from os              import path
 
 from GoogleCommonLib import GoogleCommonLib
 from LocalStorage    import LocalStorage
-from os              import path
 
-from sys import stderr as cerr
 
 class GoogleSync:
     """Copies files from remote to server if missing"""
@@ -28,9 +27,10 @@ class GoogleSync:
         gauth.LocalWebserverAuth()        # An appropriate settings.yaml must exist
         #gauth.CommandLineAuth()
 
-        self.__local = localfolder
-        self.__remote= remotefolder
-    
+        self.__log       = LogFile('GoogleSync').log
+        self.__local     = localfolder
+        self.__remote    = remotefolder
+        
         self.__drive     = GoogleDrive(gauth)
         self.__folderID  = GoogleCommonLib.getFolderId( self.__drive, remotefolder, True )
 
@@ -56,12 +56,12 @@ class GoogleSync:
             if md5 not in hashmap:
                 hashmap[md5]  = ( ori, tit, url )
             else:
-                print("Duplicate hash", md5, tit, hashmap[md5][1], file=cerr)
+                self.__log("Duplicate hash", md5, tit, hashmap[md5][1])
            
             print(md5, ori, tit, url, sep='\t', file=hashfile)
 
         hashfile.close()
-        print("[Info] GoogleSync:", len(hashmap), "hashes.", file=cerr)
+        self.__log("[Info] GoogleSync:", len(hashmap), "hashes")
         return hashmap
 
         
@@ -73,21 +73,28 @@ class GoogleSync:
         local_hashes = self.hashes_local
         remot_hashes = self.hashes_remote
 
-        num_uploaded = 0
+        upload_list = []
 
         for lhash in local_hashes:
             if lhash not in remot_hashes:
+                upload_list.append( local_hashes[lhash] )
 
-                localfile      = local_hashes[lhash]
+
+        num_uploads = len(upload_list)
+
+        if num_uploads > 0:
+            for l in range(len(upload_list)):
+
+                localfile      = upload_list[l]
                 base_localfile = path.basename(localfile)
 
-                print("Uploading %s..." % base_localfile, end ='\t', file=cerr)
+                self.__log("[%d/%d] Uploading %s..." % (l+1, num_uploads, base_localfile), end ='\t', flush=True)
                 GoogleCommonLib.uploadFile( self.__drive, self.__folderID, localfile )
-                num_uploaded += 1
-                print(" ", file=cerr)
+                self.__log(" ", flush=True)
 
-        print("Synced.", file=cerr)
-        return num_uploaded
+                
+        self.__log("Synced.")
+        return num_uploads
    
 
 

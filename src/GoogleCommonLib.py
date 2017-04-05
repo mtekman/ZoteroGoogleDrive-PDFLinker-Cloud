@@ -9,7 +9,7 @@ class GoogleCommonLib:
         """Pulls existing, or generates a new one"""
         url = GoogleCommonLib.getExistingShareableLink( drive, gfile )
         if url == None:
-            print("%s : making url shareable" % gfile['title'].split('/')[-1], file=cerr)
+            print("[GoogleCommonLib] Making shareable url for: %s" % gfile['title'].split('/')[-1], file=cerr)
             url = GoogleCommonLib.generateShareableLink( drive, gfile )
 
         return url

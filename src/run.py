@@ -16,14 +16,9 @@ if len(argv)!=2 or (len(argv)==2 and argv[1][0]=='-' and argv[1] != arg_conf):
     exit(-1)
 
 
-from GoogleShareable import *
-from ZotExportReader import *
-from ZoteroEdit      import *
-from Config          import *
-from helper          import *
-from GoogleSync      import GoogleSync
-
-setting = Config(argv[1]).setting
+from Config     import *
+from GoogleSync import GoogleSync
+from ZoteroSync import ZoteroSync
 
 # Flow:
 #   - Sync local storage with GoogleDrive
@@ -49,24 +44,15 @@ setting = Config(argv[1]).setting
 #
 #   - Library now has updated links to Gdrive, it is up to the user to clone and share it.
 
+setting = Config(argv[1]).setting
 
-goog = GoogleSync( setting['pdf', 'storage'], setting['google', 'fold']  )
+#gsyncer = GoogleSync(
+#    setting['pdf', 'storage'],
+#    setting['google', 'fold']
+#)
 
-
-# Map out google shares and Zotero export
-#
-#goog = GoogleShareable( gfold, gfold+".output.txt" )  # Map: pdf -> sharelink
-#zoer = ZotExportReader( csvfile )                     # Map: pdf -> [{title, year, author, PDF}]
-
-#title_map = intersect_maps( goog.map, zoer.map )
-title_map = {}
-
-# Edit personal library and/or sync or clone to a group one
-zed = ZoteroDispatch(
-    setting['zotero'],
-    title_map,
-    setting['pdf'],
-    setting['general']['personal_only'],
-    setting['debug']
+zsyncer = ZoteroSync(
+    setting['zotero', 'api_key'],
+    setting['zotero', 'user', 'lib_id' ],
+    setting['zotero', 'user', 'collection_name' ]
 )
-
