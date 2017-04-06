@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
+from sys import stderr as cerr
 
 class ZoteroLibs:
     
     @staticmethod
-    def progress(self, format_message, num1, num2, num3):
+    def progress(format_message, num1, num2, num3):
         """Displays progress for 3 items given a format template"""
         print(format_message % (num1,num2,num3), end='\r', file=cerr)
 
@@ -42,8 +43,8 @@ class ZoteroLibs:
         limit_vl = 100
 
         total_processed = 0
-        total_attach    = 0
-        total_url       = 0
+        total_v1        = 0
+        total_v2        = 0
 
 
         while True:
@@ -56,17 +57,15 @@ class ZoteroLibs:
                 break
 
             for item in items:
-                num_url, num_attach = callback(item)
-                total_attach += num_attach
-                total_url    += num_url
+                val1, val2 = callback(item)
+                total_processed += 1
+                total_v1        += val1
+                total_v2        += val2
+
                
-                ZoteroLibs.progress(progmessage, total_processed, total_attach, total_url)
-
-            total_processed += len_items
-            ZoteroLibs.progress(progmessage, total_processed, total_attach, total_url)
-
-        # Fin
-        ZoteroLibs.progress(progmessage, total_processed, total_attach, total_url)
+                ZoteroLibs.progress(progmessage, total_processed, total_v1, total_v2)   # per item update
+            ZoteroLibs.progress(progmessage, total_processed, total_v1, total_v2)       # per batch query update
+        ZoteroLibs.progress(progmessage, total_processed, total_v1, total_v2)           # upon completion
 
 
     ####### DEBUG ######

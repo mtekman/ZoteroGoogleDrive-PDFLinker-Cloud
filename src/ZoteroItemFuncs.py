@@ -1,8 +1,36 @@
 #!/usr/bin/env python3
 
-
+from pyzotero import zotero_errors
+ 
 class ZoteroItemFuncs:
     """Functions that run on each item"""
+
+
+    @staticmethod
+    def getChildAttachmentInfo(zot, item):
+        """ """
+        res = []
+
+        try:
+            for child in zot.children(item['key']):
+                if child['data']['itemType'] == 'attachment':
+
+                    if child['data']['linkMode'] == "imported_file":
+                        res.append({
+                            'md5'   : child['data']['md5'],
+                            'fname' : child['data']['filename']
+                        })
+
+                    elif child['data']['linkMode'] == "linked_file":
+                        res.append({
+                            'path'  : child['data']['path']
+                        })
+                        
+        except zotero_errors.UnsupportedParams:
+            pass
+
+        return res
+        
 
     @staticmethod
     def attachUrlChild(zot, item, map_data, log):
@@ -91,10 +119,6 @@ class ZoteroItemFuncs:
 
 
     ##### end of url funcs ####
-
-    @staticmethod
-    def getAttachment
-    
 
     @staticmethod
     def downloadChildFiles(zot, item, log):
