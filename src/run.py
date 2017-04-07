@@ -46,13 +46,20 @@ from ZoteroSync import ZoteroSync
 
 setting = Config(argv[1]).setting
 
-#gsyncer = GoogleSync(
-#    setting['pdf', 'storage'],
-#    setting['google', 'fold']
-#)
+gsyncer = GoogleSync(
+    setting['pdf', 'storage'],
+    setting['google', 'fold']
+)
 
 zsyncer = ZoteroSync(
     setting['zotero', 'api_key'],
     setting['zotero', 'user', 'lib_id' ],
     setting['zotero', 'user', 'collection_name' ]
 )
+
+glocal = gsyncer.hashes_local
+gremot = gsyncer.hashes_remote
+
+zremot_md = zsyncer.hashMD5s
+zremot_fn = zsyncer.hashFnames
+

@@ -6,6 +6,7 @@ from os              import path
 
 from GoogleCommonLib import GoogleCommonLib
 from LocalStorage    import LocalStorage
+from LogFile         import LogFile
 
 
 class GoogleSync:

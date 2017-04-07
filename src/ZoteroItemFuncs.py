@@ -9,10 +9,14 @@ class ZoteroItemFuncs:
     @staticmethod
     def getChildAttachmentInfo(zot, item):
         """ """
-        res = []
+        res = []  # attachments
+        rul = []  # google urls
 
         try:
             for child in zot.children(item['key']):
+                if child['data']['title'] == "Google Drive":
+                    rul.append( child['data']['url'] )
+                
                 if child['data']['itemType'] == 'attachment':
 
                     if child['data']['linkMode'] == "imported_file":
@@ -29,7 +33,7 @@ class ZoteroItemFuncs:
         except zotero_errors.UnsupportedParams:
             pass
 
-        return res
+        return (res, rul)
         
 
     @staticmethod
