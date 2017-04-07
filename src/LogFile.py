@@ -18,5 +18,5 @@ class LogFile:
 
     def log(self, *text, **keyw):
         print( "[%s] -- %s -- " % (LogFile.timestamp(), self.caller), *text, **keyw, file=self.__log)
-        print( *text, **keyw, file=stderr)
+        print( "[Info]", self.caller, *text, **keyw, file=stderr)
 

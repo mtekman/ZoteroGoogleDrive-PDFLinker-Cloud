@@ -116,7 +116,7 @@ class ZoteroSync:
         self.__attachmentmap = {}
         self.__existingGURLs = {}
                 
-        self.__log("[Info] ZoteroSync: Retrieving attachment data")
+        self.__log("Retrieving attachment data")
 
         callback = self.__mapAttachInfo;
         
@@ -152,7 +152,8 @@ class ZoteroSync:
                     md5   = item_data['md5'].strip()
                 else:
                     print("UKNOWN", item_data)
-                    continue
+                    exit(-1)
+                    #continue
 
                 if fname != "":
                     if fname in self.hashFnames and key != self.hashFnames[fname]:
