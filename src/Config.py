@@ -57,7 +57,7 @@ class Config:
                                          "attach_pdf", "#  What to do with each PDF:\n"+
                                          "#  - any conjunction of attaching the PDF as a child item,\n"+
                                          "#    and/or overwriting or clearing the URL field of the item\n"+
-                                         "#  - valid modes are: attach_pdf, url_set, url_clear"),
+                                         "#  - valid modes are: attach_pdf, remove_pdf, url_set, url_clear"),
                 'storage'             : (self.__get, "PDF Settings", "Storage",
                                          "", "#\n# PDFs are either handled internally by Zotero and synced to their servers\n"+
                                          "# or are accessed from an external path on your local machine.\n"+
@@ -157,16 +157,29 @@ class Config:
         work_modes = self.__get(heading, name).split(',')
 
         for mode in work_modes:
+            
             mode = mode.strip()
             pdf_workmap[mode] = True              
 
         if ( 'url_set' in pdf_workmap ) and ('url_clear' in pdf_workmap):
             print("[Error] Config: Cannot use 'url_set' and 'url_clear' at the same time", file=cerr)
             exit(-1)
-        
-        if ("attach_pdf" not in pdf_workmap) and ('url_set' not in pdf_workmap ) and ('url_clear' not in pdf_workmap):
+
+        if ( 'attach_pdf' in pdf_workmap ) and ('remove_pdf' in pdf_workmap):
+            print("[Error] Config: Cannot use 'attach_pdf' and 'remove_pdf' at the same time", file=cerr)
+            exit(-1)
+
+            
+        if (
+                ("attach_pdf" not in pdf_workmap) and
+                ('url_set' not in pdf_workmap )   and
+                ('url_clear' not in pdf_workmap)  and
+                ('remove_pdf' not in pdf_workmap)      ):
+                
             print("[Error] Config: No PDF mode specified, quitting.")
             exit(0)
+
+        print("[Info] Config: PDF Mode(s) specified -", ','.join([x for x in pdf_workmap]), file=cerr)
         
         return pdf_workmap
 

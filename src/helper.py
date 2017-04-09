@@ -1,6 +1,53 @@
 #!/usr/bin/env python3
 
-def intersect_maps( gmap, zmap ):
+from sys import stderr as cerr
+
+def intersect_maps( gremot, zremot_md, zremot_fn, cb1, cb2 ):
+
+    remaining = {}
+
+    num_links = 0
+    num_total = 0
+
+    for hsh in zremot_md:
+        num_total += 1
+
+        if hsh in gremot:
+            key = zremot_md[hsh]
+            url = gremot[hsh][2]
+
+            num_links += 1
+
+            print("Linking %d of %d files" % (num_links, num_total), end='\r', file=cerr)
+            cb1( key, hsh, url )
+
+        else:
+            orif,newf,gurl = gremot[hsh]
+
+            # Duplicates overwritten
+            remaining[orif] = gurl
+            remaining[newf] = gurl
+
+    print("", file=cerr)
+
+    num_links2 = 0
+
+    for title in zremot_fn:
+        if title in remaining:
+            key = zremot_fn[title]
+            url = remaining[title]
+
+            num_links2 += 1
+
+            print("Linking %d of %d remaining files\r" % (num_links2, len(remaining)), file=cerr)
+            cb2( key, title, url )
+
+
+
+
+
+
+def intersect_maps2( gmap, zmap ):
     """Intersects the Google and Zotero map data using their Title values"""
 
     pdf_errors = open('pdf_errors.txt','w')

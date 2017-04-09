@@ -19,15 +19,41 @@ from LocalLibs       import LocalLibs
 class ZoteroSync:
 
     
-    def __init__(self, apikey, userlibrary_id, usercollection_name):
+    def __init__(self, apikey, userlibrary_id, usercollection_name, workmode):
         
         self.__log    = LogFile('ZoteroSync').log
 
         self.__zot    = zotero.Zotero( userlibrary_id, "user", apikey )
         self.__collID = ZoteroLibs.findCollectionID( self.__zot, usercollection_name )
 
+        self.__modes  = workmode
+
         self.collateMaps()
 
+
+    def __linkKeyToUrl(self, key, url):
+        
+        if   'attach_pdf' in self.__modes:
+            ZoteroItemFuncs.attachUrlChild( self.__zot, key, url, self.__log)
+        elif 'remove_pdf' in self.__modes:
+            ZoteroItemFuncs.removeUrlChild( self.__zot, key, self.__log)
+
+        if   'url_clear' in self.__modes:
+            ZoteroItemFuncs.directUrlSet( self.__zot, key, url, self.__log)
+        elif 'url_clear' in self.__modes:
+            ZoteroItemFuncs.directUrlClear( self.__zot, key, self.__log)
+        
+        
+        
+    def linkByMD5(self, key, md5, url):
+        self.__log("Linking Title", key, "[", md5, "] to", url, silent=True)
+        self.__linkKeyToUrl(key, url)
+        
+
+    def linkByTitle(self, key, title, url):
+        self.__log("Linking MD5", key, "[", title, "] to", url, silent=True)
+        self.__linkKeyToUrl(key, url)
+        
 
 
     def __mapAttachInfo(self, item):
@@ -50,7 +76,8 @@ class ZoteroSync:
 
     def collateMaps(self):
 
-        self.keyattachments_file = path.join( user_cache_dir('GoogleZoteroPDFLinker'), "keyattachments.map" )
+        self.keyattachments_file = path.join(
+            user_cache_dir('GoogleZoteroPDFLinker'), "keyattachments.map" )
 
         if path.exists( self.keyattachments_file ) and path.getsize( self.keyattachments_file ) > 5:
 
@@ -134,10 +161,6 @@ class ZoteroSync:
         self.hashMD5s   = {}  # md5    -> key
         self.hashFnames = {}  # title -> key
 
-        #des = self.__attachmentmap
-        #import pdb
-        #pdb.set_trace()
-
         for key in self.__attachmentmap:
             item_data_collective = self.__attachmentmap[key]
 
@@ -146,6 +169,7 @@ class ZoteroSync:
                 fname=""
                 md5=""
                 if 'path' in item_data:
+                    md5   = ""
                     fname = path.basename( item_data['path'] ).strip()
                 elif 'fname' in item_data:
                     fname = item_data['fname'].strip()

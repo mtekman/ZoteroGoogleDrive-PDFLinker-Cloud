@@ -17,6 +17,13 @@ class LogFile:
 
 
     def log(self, *text, **keyw):
+        silent = False
+        if 'silent' in keyw:
+            silent = True
+            del keyw['silent']
+        
         print( "[%s] -- %s -- " % (LogFile.timestamp(), self.caller), *text, **keyw, file=self.__log)
-        print( "[Info]", self.caller, *text, **keyw, file=stderr)
+
+        if not silent:
+            print( "[Info]", self.caller, *text, **keyw, file=stderr)
 

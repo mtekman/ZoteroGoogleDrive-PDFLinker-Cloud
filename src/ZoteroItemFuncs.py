@@ -34,21 +34,44 @@ class ZoteroItemFuncs:
             pass
 
         return (res, rul)
-        
+
+
 
     @staticmethod
-    def attachUrlChild(zot, item, map_data, log):
-        """Attaches an URL as a child item to the current item. Supports multiple attachments"""
+    def removeUrlChild(zot, key, log):
+        """Removes URL child items to the current item, for all Google Url Attachments"""
 
-        newlink  = map_data['link']
-        children = zot.children(item['key'])
+        children = zot.children( key )
+        to_delete = []
         
         for child in children:
             try:
-                if child['data']['title'] == "Google Drive":
+                if child['data']['title'].startswith("Google Drive"):
+                    zot.delete_item( child )
+                    #to_delete.append( child['data'] )
+                   
+            except KeyError:
+                pass
+
+
+        #zot.delete_item( to_delete )
+        return 0
+
+
+
+    
+
+    @staticmethod
+    def attachUrlChild(zot, key, newlink, log):
+        """Attaches an URL as a child item to the current item. Supports multiple attachments"""
+
+        children = zot.children( key )
+        
+        for child in children:
+            try:
+                if child['data']['title'].startswith("Google Drive"):
                     if child['data']['url'] == newlink:
-                        log("Link already exists, doing nothing.",
-                              child, newlink, item)
+                        log("Link already exists, doing nothing.", child, newlink, key, silent=True)
                         return 0
 
                     else:
@@ -66,7 +89,7 @@ class ZoteroItemFuncs:
 
                         # We assume it's a new PDF that needs linking
                         log("GoogleDrive attachment exists, attaching a new one under the assumption of supplemental data.",
-                              child, newlink, item)
+                              child, newlink, key, silent=True)
 
 
             except KeyError:
@@ -74,30 +97,35 @@ class ZoteroItemFuncs:
 
         # Handled existing links, now the case for new ones
         #
-        new_item = {'itemType': 'attachment', 'linkMode': 'linked_url', 'title'    : "Google Drive", 'accessDate' : '',
-                    'note'    : ''          , 'tags'    :           [], 'relations': {}            , 'contentType': '',
-                    'charset' : ''          , 'url'     : newlink                                                       }
+        item_title  = child['data']['title']
+        new_item    = {   'itemType': 'attachment',                      'linkMode': 'linked_url',
+                             'title': "Google Drive - " + item_title,  'accessDate':           '',
+                              'note':        '',                             'tags':           [],
+                         'relations':        {},                      'contentType':           '',
+                           'charset':        '',                              'url': newlink       }
 
         # Bind attachment to parentID
-        res = zot.create_items([new_item], item['key']  )  
+        res = zot.create_items( [new_item], key )
            
         if len(res['successful']) > 0:
-            log("Successfully attached", item, map_data['link'])
+            log("Successfully attached", key, newlink, silent=True)
             return 1
 
-        log("Failed to attach", item, map_data['link'])
+        log("Failed to attach", key, newlink, silent=True)
         return 0
 
 
 
     @staticmethod
-    def directUrlSet(zot, item, map_data, log):
+    def directUrlSet(zot, key, link, log):
         """Sets a Google Drive link in the URL field of an item"""
+
+        item = zot.item( key )
         
         if len(item['data']['url'].strip()) < 10:
-            log("Updating", item, map_data['link'])
+            log("Updating", item, link)
 
-            item['data']['url'] = map_data['link']
+            item['data']['url'] = link
             zot.update_item(item['data'])
             return 1
 
@@ -107,8 +135,10 @@ class ZoteroItemFuncs:
 
     
     @staticmethod
-    def directUrlClear(zot, item, log):
+    def directUrlClear(zot, key, log):
         """Clears a Google Drive link in the URL field of an item"""
+
+        item = zot.item( key )
 
         if  item['data']['url'].startswith("https://drive.google"):
             item['data']['url'] = ""
@@ -118,16 +148,19 @@ class ZoteroItemFuncs:
             log("Cleared Google Drive URL in", item['key'], item['data']['title'])
             return 1
 
-        log("Left URL alone", item['key'], item['data']['title'])
+        log("Left URL alone", item['key'], item['data']['title'] )
         return 0
 
 
     ##### end of url funcs ####
 
     @staticmethod
-    def downloadChildFiles(zot, item, log):
-        """Downloads child attachments into local directory"""
-        children = zot.children(item['key'])
+    def downloadChildFiles(zot, key, log):
+        """Downloads child attachments into local directory"""       
+
+        item = zot.item(key)
+        children = zot.children(key)
+        
 
         if len(children) > 0:
             log("Retrieving child for %s:" % item['data']['title'])

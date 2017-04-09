@@ -19,6 +19,7 @@ if len(argv)!=2 or (len(argv)==2 and argv[1][0]=='-' and argv[1] != arg_conf):
 from Config     import *
 from GoogleSync import GoogleSync
 from ZoteroSync import ZoteroSync
+from helper     import *
 
 # Flow:
 #   - Sync local storage with GoogleDrive
@@ -54,12 +55,17 @@ gsyncer = GoogleSync(
 zsyncer = ZoteroSync(
     setting['zotero', 'api_key'],
     setting['zotero', 'user', 'lib_id' ],
-    setting['zotero', 'user', 'collection_name' ]
+    setting['zotero', 'user', 'collection_name' ],
+    setting['pdf', 'mode' ]
 )
 
-glocal = gsyncer.hashes_local
-gremot = gsyncer.hashes_remote
+#glocal = gsyncer.hashes_local
+gremot = gsyncer.hashes_remote # md5 -> (original_filename, new_filename, google url)
 
-zremot_md = zsyncer.hashMD5s
-zremot_fn = zsyncer.hashFnames
+zremot_md = zsyncer.hashMD5s   # md5 -> key
+zremot_fn = zsyncer.hashFnames # title -> key
 
+
+intersect_maps( gremot, zremot_md, zremot_fn,
+                zsyncer.linkByMD5, zsyncer.linkByTitle
+)
