@@ -7,7 +7,7 @@ class ZotExportReader:
 
     def __init__(self, filename):
 
-        self.map = {}  # basename pdf -> [{Paper, Year, Authors, Pdf}]
+        self.titlemap = {}  # basename pdf -> [{Paper, Year, Authors, Pdf}]
 
         with open(filename,'rt', encoding="utf8") as csvfile:
             exportfile = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -44,10 +44,10 @@ class ZotExportReader:
                     key = ach.split('/')[-1].split('\\')[-1].split('.pdf')[0]+'.pdf'
 
                 
-                    if key not in self.map:
-                        self.map[key] = []
+                    if key not in self.titlemap:
+                        self.titlemap[key] = []
 
-                    self.map[key].append( {'title':tt, 'year':yy, 'authors':au, 'attachment': ach} )
+                    self.titlemap[key].append( {'title':tt, 'year':yy, 'authors':au, 'attachment': ach} )
 
                 count +=1 
                 print("        - %d" % count, file=sys.stderr, end='\r')
