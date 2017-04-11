@@ -41,7 +41,7 @@ class Config:
                     'lib_id'          : (self.__get, "Zotero Settings", "User Library ID",
                                          "1234567", "#  Library ID found at https://www.zotero.org/settings/keys, 'Your userID for API calls is <libraryID>'"),
                     'collection_name' : (self.__get, "Zotero Settings", "User Collection Name",
-                                         "testthese", "")
+                                         "mycollection", "")
                 },
 #                'group': {
 #                    'lib_id'          : (self.__get, "Zotero Settings", "Group Library ID",
@@ -61,7 +61,9 @@ class Config:
                 'storage'             : (self.__get, "PDF Settings", "Storage",
                                          "/change/this/path", "#\n# PDFs are either handled internally by Zotero and synced to their servers\n"+
                                          "# or are accessed from an external path on your local machine.\n"+
-                                         "#  - If you use zotero storage, provide the cache directory, or the full external path /foo/bar/PDFs/etc/")
+                                         "#  - If you use zotero storage, provide the cache directory, or the full external path /foo/bar/PDFs/etc/\n"+
+                                         "#  - Zotero Storage folder in Linux is at '~/.zotero/zotero/<blah>.default/zotero/storage/'\n"
+                                         "#                      and in Windows is likely under the AppData folder somewhere")
             },
 #            'other'    : {
 #                'debug'               : (self.__cp.getboolean, "Other", "Debug",
