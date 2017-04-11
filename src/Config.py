@@ -26,13 +26,13 @@ class Config:
 #                                         "True", "#  If PDFs are already on the drive, don't copy or rename if true"),
 #                'rename'              : (self.__get, "Google Drive", "Rename",
 #                                         "False",  "#  otherwise:\n#  Rename PDFs when copying to the Drive by item metadata"),
-                'rename_schema'       : (self.__get, "Google Drive", "Rename Schema",
-                                         "*Y--*J--*A--*T",
-                                         "#  If true, schema uses following placeholders:\n"+
-                                         "#      *A - Authors, *F - First Author, *L - Last Author\n"+
-                                         "#      *Y - Year,    *J - Journal,      *T - Title\n"+
-                                         "#  all whitespace is replaced with and underscore '_'\n"+
-                                         "# below produces: 1996--ElectricPepper--Mikey_GW__Sharon_GS--On_The_Topic_Of_Disease.pdf")
+#                'rename_schema'       : (self.__get, "Google Drive", "Rename Schema",
+#                                         "*Y--*J--*A--*T",
+#                                         "#  If true, schema uses following placeholders:\n"+
+#                                         "#      *A - Authors, *F - First Author, *L - Last Author\n"+
+#                                         "#      *Y - Year,    *J - Journal,      *T - Title\n"+
+#                                         "#  all whitespace is replaced with and underscore '_'\n"+
+#                                         "# below produces: 1996--ElectricPepper--Mikey_GW__Sharon_GS--On_The_Topic_Of_Disease.pdf")
             },
             'zotero'   : {
                 'api_key'             : (self.__get, "Zotero Settings", "API Key",
@@ -59,19 +59,19 @@ class Config:
                                          "#    and/or overwriting or clearing the URL field of the item\n"+
                                          "#  - valid modes are: attach_pdf, remove_pdf, url_set, url_clear"),
                 'storage'             : (self.__get, "PDF Settings", "Storage",
-                                         "", "#\n# PDFs are either handled internally by Zotero and synced to their servers\n"+
+                                         "/change/this/path", "#\n# PDFs are either handled internally by Zotero and synced to their servers\n"+
                                          "# or are accessed from an external path on your local machine.\n"+
                                          "#  - If you use zotero storage, provide the cache directory, or the full external path /foo/bar/PDFs/etc/")
             },
-            'other'    : {
-                'debug'               : (self.__cp.getboolean, "Other", "Debug",
-                                         "False",  "#  Read only mode, processes nothing")
-            }
+#            'other'    : {
+#                'debug'               : (self.__cp.getboolean, "Other", "Debug",
+#                                         "False",  "#  Read only mode, processes nothing")
+#            }
         }
 
         if filename == "--make-config":
             self.createConfig()
-            print("[Info] Config: Written defaults to config.txt, please edit and run as first parameter.", file=cerr)
+            print("[Info] Config: Written defaults to %s, please edit and run as first parameter." % self.__confname, file=cerr)
             exit(0)
 
         ## Parse
@@ -120,8 +120,9 @@ class Config:
             self.__cp.set(section,option, default)
             
         self.__iterateMap( setConfig )
+        self.__confname = "myconfig.conf"
 
-        with open('config.txt','w') as out:
+        with open( self.__confname, 'w' ) as out:
             self.__cp.write(out)
 
 
