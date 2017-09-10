@@ -50,8 +50,8 @@ A template config file can be generated via the `--make-config` parameter, produ
 This file can then be passed in as first parameter to the run script.
 
 
-# Note / Good Practice Conventions #
+### Note / Good Practice Conventions
 
- * Do not nest directories for best results.
+ Do not nest directories for best results.
  
- * As before, this is *not* a one-time only operation. Every time you add to your library, you will need to re-run the script. Thankfully it only edits items that do not already have links.
+ As before, this is *not* a one-time only operation. Every time you add to your library, you will need to re-run the script. Thankfully it only edits items that do not already have links.
