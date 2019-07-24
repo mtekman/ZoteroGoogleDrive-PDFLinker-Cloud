@@ -8,8 +8,8 @@ If your local PDFs are not yet uploaded/synced to your Google Drive, this tool w
 
 ## Usage
 
- 1. Install *pyzotero* and *pydrive* via pip:  
-        `sudo pip install pyzotero pydrive`
+ 1. Install dependencies via pip (*pyzotero*, *pydrive*, and *appdirs*):  
+        `sudo pip install pyzotero pydrive appdirs`
 
 
  2. Run `./src/run.py <config file>`
