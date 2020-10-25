@@ -1,3 +1,9 @@
+### This repo has migrated to GitLab
+https://gitlab.com/mtekman/ZoteroGoogleDrive-PDFLinker-Cloud
+###### (The copy here is archived. Please see the above link for the latest developments)
+
+
+
 # **Zotero/GoogleDrive PDF-Linker - Cloud** #
 
 This is the *Cloud* version of the [Zotero/GoogleDrive PDF-Linker](https://github.com/mtekman/ZoteroGoogleDrive-PDFLinker).
